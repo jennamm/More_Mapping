@@ -23,7 +23,7 @@ colnames(county.fips)[2] = 'ID'
 ob <- merge(ob, county.fips, by="ID")
 
 # filter Floyd-1999 in hurr_tracks data and rain data
-dt <- hurr_tracks %>% filter(storm_id == "Earl-2010")
+dt <- hurr_tracks %>% filter(storm_id == "Earl-2010"|storm_id == "Alex-2010")
 dt2 <- hurr_tracks %>% filter(storm_id == "Alex-2010")
 
 ra <- rain %>% filter(storm_id == "Earl-2010") %>% group_by(fips) %>%
@@ -36,16 +36,17 @@ ra$fips <- as.numeric(ra$fips)
 ra2$fips <- as.numeric(ra2$fips)
 
 #merge data by fips variable
-ra <- merge(ob, ra,by="fips")
+ra <- merge(ob, ra, by="fips")
 ra2 <- merge(ob, ra2, by="fips")
 
 Earl <- cbind(dt$longitude,dt$latitude)%>%
   Line()%>%Lines(ID='Earl-2010')%>%
   list()%>%SpatialLines()
 
-Alex <- cbind(dt2$longitude, dt2$latitude)%>%
+Alex <- cbind(dt2$longitude,dt2$latitude)%>%
   Line()%>%Lines(ID='Alex-2010')%>%
   list()%>%SpatialLines()
+
 
 
 # get map data
@@ -79,11 +80,16 @@ ra.new$ID[ra.new$ID =="massachusetts,worcester"|ra.new$ID=="massachusetts,middle
           |ra.new$ID=="north carolina,jones"|ra.new$ID=="north carolina,carteret"|ra.new$ID=="north carolina,duplin"
           |ra.new$ID=="north carolina,onslow"|ra.new$ID=="north carolina,pender"|ra.new$ID=="north carolina,new hanover"
           |ra.new$ID=="north carolina,columbus"|ra.new$ID=="north carolina,brunswick"
-          |ra.new$ID=="north carolina,dare"] <-"Public Assistance"
-ra.new$ID[ra.new$ID != "Public Assistance"] <- "No Designation"
+          |ra.new$ID=="north carolina,dare"|ra.new$ID=="texas,lamb"|ra.new$ID=="texas,floyd"|ra.new$ID=="texas,motley"
+          |ra.new$ID=="texas,cottle"|ra.new$ID=="texas,foard"|ra.new$ID=="texas,terry"|ra.new$ID=="texas,lynn"
+          |ra.new$ID=="texas,garza"|ra.new$ID=="texas,dawson"|ra.new$ID=="texas,jim wells"|ra.new$ID=="texas,calhoun"]<-"Public Assistance"
+ra.new$ID[ra.new$ID=="texas,val verde"] <- "Individual Assistance"
+ra.new$ID[ra.new$ID=="texas,lubbock"|ra.new$ID=="texas,maverick"|ra.new$ID=="texas,webb"|ra.new$ID=="texas,zapata"
+          |ra.new$ID=="texas,jim hogg"|ra.new$ID=="texas,starr"|ra.new$ID=="texas,hidalgo"
+          |ra.new$ID=="texas,cameron"] <- "Individual Assistance and Public Assistance"
+ra.new$ID[ra.new$ID!="Public Assistance"&ra.new$ID != "Individual Assistance"&ra.new$ID != "Individual Assistance and Public Assistance"] <- "No Designation"
 
-ra.new2$ID[ra.new2$ID == "texas,val verde"] <- "Individual Assistance"
-ra.new2$ID[ra.new2$ID != "Individual Assistance"] <- "No Designation"
+
 
 #Plotting tmap
 t_F = tm_shape(ra.new)+
@@ -93,10 +99,5 @@ t_F = tm_shape(ra.new)+
   tm_lines(col='red')+
   tm_layout(main.title='Earl-2010',main.title.position="center")
 t_F
-t_F2= tm_shape(ra.new2)+
-  tm_polygons(col='ID',title="Assistance (FEMA)", style="pretty")+
-  tm_legend(position=c("right","bottom"))+
-  tm_shape(Alex)+
-  tm_lines(col='red')+
-  tm_layout(main.title='Alex-2010',main.title.position="center")
-t_F2
+
+
