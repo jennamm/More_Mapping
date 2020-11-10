@@ -1,0 +1,26 @@
+---
+title: "More_Mapping"
+author: "Jenna Moscaritolo & JungHwa Yeom"
+date: "11/7/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+pacman::p_load("tidyverse","hurricaneexposuredata","drat","maps","tmap","sf","viridis","sp")
+```
+
+## 1. Data Cleaning
+
+```{r}
+# Extracting the general data for mapping
+addRepo("geanders")
+data("hurr_tracks")
+data("rain")
+```
+
+```{r}
+# Filtering target data
+earl_track <- hurr_tracks %>% filter(storm_id == "Earl-2010")
+```
