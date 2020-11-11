@@ -90,6 +90,7 @@ t_F_i = tm_shape(ra.new.i)+
   tm_layout(main.title='Irene-2011',main.title.position = "center") 
 t_F_i
 
+png(width=100, height =100)
 t_F_o = tm_shape(ra.new.o)+
   tm_polygons(col='precip',title="Rainfall (mm)")+
   tm_legend(position=c("right","bottom"))+
@@ -97,7 +98,7 @@ t_F_o = tm_shape(ra.new.o)+
   tm_lines(col='red')+
   tm_layout(main.title='One-2009',main.title.position = "center") 
 t_F_o
-
+dev.off()
 
 
 ui <- fluidPage(
@@ -105,25 +106,20 @@ ui <- fluidPage(
   sidebarLayout(
     tabsetPanel(
       conditionalPanel(
-        'input.dataset === "ra.new.o"'),
-      
+        'input.dataset === "hurr_tracks"'),
       conditionalPanel(
-        'input.dataset === "ra.new"'),
+        'input.dataset === "hurr_tracks"'),
       conditionalPanel(
-        'input.dataset === "ra.new.i"'),
+        'input.dataset === "hurr_tracks"',
       )
     ),
     mainPanel(
-      
-      
       tabsetPanel(
         id = 'dataset',
-        tabPanel("One-2009",
-                 plotOutput(outputId="t_F_o", width="100%"),
+        tabPanel("Storm tracks for Atlantic basin storms data table",
+                 plotOutput(outputId = "t_F_o", width="100%"),
                  
                  # Create a new Row in the UI for selectInputs
-                 
-                 
                  fluidRow(
                    column(4,
                           selectInput("storm",
@@ -131,16 +127,17 @@ ui <- fluidPage(
                                       c("All",
                                         unique(as.character(hurr_tracks$storm_id))))
                    ),
-                   
+                   column(4,
+                          selectInput("storm",
+                                      "Storm ID:",
+                                      c("All",
+                                        unique(hurr_tracks$storm_id)))
+                   )
                  ),
                  # Create a new row for the table.
                  DT::dataTableOutput("table1")),
-        
-        
-        tabPanel("Earl-2010",
-                 plotOutput(outputId="t_F", width="100%"),
-                 
-                 
+                 tabPanel("Rainfall for US counties during Atlantic basin tropical storms data table",
+                
                  # Create a new Row in the UI for selectInputs
                  fluidRow(
                    column(4,
@@ -149,28 +146,18 @@ ui <- fluidPage(
                                       c("All",
                                         unique(as.character(rain$storm_id))))
                    ),
-                 ),
-                 # Create a new row for the table.
-                 DT::dataTableOutput("table2")),
-      tabPanel("Irene-2011",
-               plotOutput(outputId="t_F_i", width="100%"),
-               
-               
-               # Create a new Row in the UI for selectInputs
-               fluidRow(
-                 column(4,
-                        selectInput("storm",
-                                    "Storm ID:",
-                                    c("All",
-                                      unique(as.character(rain$storm_id))))
-                 ),
-               ),
-               # Create a new row for the table.
-               DT::dataTableOutput("table3")))
-    )
+                   column(4,
+                          selectInput("fips",
+                                      "Fips:",
+                                      c("All",
+                                        unique(rain$fips)))
+                   )
+                ),
+                # Create a new row for the table.
+                DT::dataTableOutput("table2")))
+          )
+      )   
   )
-)
-
 
 server <- function(input, output) {
   
@@ -178,10 +165,10 @@ server <- function(input, output) {
   output$table1 <- DT::renderDataTable(DT::datatable({
     data <- hurr_tracks
     if (input$storm != "All") {
-      data <- hurr_tracks[hurr_tracks$storm_id == input$storm,]
+      data <- data[data$storm_id == input$storm,]
     }
     if (input$year != "All") {
-      data <- hurr_tracks[hurr_tracks$year == input$year,]
+      data <- data[data$storm_id == input$storm,]
     }
     
     data
@@ -200,29 +187,14 @@ server <- function(input, output) {
     
     data2
   }))
-  output$table3 <- DT::renderDataTable(DT::datatable({
-    data3 <- rain
-    if (input$storm != "All") {
-      data3 <- data3[rain$storm_id == input$storm,]
-    }
-    if (input$fips != "All") {
-      data3 <- data3[rain$fips == input$fips,]
-    }
-    
-    data3
-  }))
-  output$t_F_o <- renderPlot({
-    print(t_F_o)
-  })
-  output$t_F <- renderPlot({
-    print(t_F)
-  })
-  output$t_F_s <- renderPlot({
-    print(t_F_s)
-  })
+  
   
 }
 
 # Run the application 
-shinyApp(ui = ui, server = server)
+shinyApp(ui = ui, server = server)                
+
+        
+        
+  
 
