@@ -91,7 +91,7 @@ t_F_i = tm_shape(ra.new.i)+
 t_F_i
 
 png(width=100, height =100)
-t_F_o = tm_shape(ra.new.o)+
+t_F_o <- tm_shape(ra.new.o)+
   tm_polygons(col='precip',title="Rainfall (mm)")+
   tm_legend(position=c("right","bottom"))+
   tm_shape(One)+
@@ -99,6 +99,9 @@ t_F_o = tm_shape(ra.new.o)+
   tm_layout(main.title='One-2009',main.title.position = "center") 
 t_F_o
 dev.off()
+
+tmap_save(t_F_o, filename= "one.png")
+tmap_save(t_F_o, filename ="one.html")
 
 
 ui <- fluidPage(
@@ -117,7 +120,7 @@ ui <- fluidPage(
       tabsetPanel(
         id = 'dataset',
         tabPanel("Storm tracks for Atlantic basin storms data table",
-                 plotOutput(outputId = "t_F_o", width="100%"),
+                tmapOutput("my_tmap"),
                  
                  # Create a new Row in the UI for selectInputs
                  fluidRow(
@@ -162,6 +165,14 @@ ui <- fluidPage(
 server <- function(input, output) {
   
   # Filter data based on selections
+  output$my_tmap = renderTmap({
+    tm_shape(ra.new)+
+      tm_polygons(col='precip',title="Rainfall (mm)")+
+      tm_legend(position=c("right","bottom"))+
+      tm_shape(Earl)+
+      tm_lines(col='red')+
+      tm_layout(main.title='Earl-2010',main.title.position = "center") 
+  })
   output$table1 <- DT::renderDataTable(DT::datatable({
     data <- hurr_tracks
     if (input$storm != "All") {
@@ -195,6 +206,8 @@ server <- function(input, output) {
 shinyApp(ui = ui, server = server)                
 
         
+        
+  
         
   
 
