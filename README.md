@@ -3,7 +3,7 @@
 **List of items in this repository:**
 
 
-**MM_ShinyApp:** Shiny App information. Published at: 
+**MM_ShinyApp:** Shiny App information. Published at: https://jennamm.shinyapps.io/MM_ShinyApp/
 
 **MM_Presentation.Rmd:** Code for the presentation
 
