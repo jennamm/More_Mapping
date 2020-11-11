@@ -1,4 +1,3 @@
-
 pacman::p_load("tidyverse","drat","maps","tmap","sf","viridis","sp","hurricaneexposuredata","hurricaneexposure","tmaptools")
 addRepo("geanders")
 data("hurr_tracks") 
