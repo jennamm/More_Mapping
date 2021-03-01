@@ -1,5 +1,8 @@
 # More_Mapping
 
+This project is to further familiarize myself with mapping in R. This was for the GRSMA615 class.
+
+
 **List of items in this repository:**
 
 
